@@ -125,7 +125,7 @@ article>h2 {
 
 .places .reviews>ul {
     list-style: none;
-    display: flex;
+    display: flex; 
     flex-direction: column;
     justify-content: center;
     padding: 0;
