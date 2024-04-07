@@ -1,37 +1,34 @@
 $(function () {
-  let selected;
+  const selectedNames = [];
   $('INPUT[type=checkbox]').on('change', function () {
     $('.amenities h4').text('');
-    selected = $('INPUT[type=checkbox]:checked').map(function () {
-      return $(this).attr('data-id');
-    });
-    let selectedNames = $('INPUT[type=checkbox]:checked').map(function () {
-      return $(this).attr('data-name');
-    });
-    for (let i = 0; i < selectedNames.length; i++) {
-      if (i === selectedNames.length - 1) {
-        $('.amenities h4').append(selectedNames[i]);
+    if ($(this).is(':checked')) {
+      if (!selectedNames.includes($(this).attr('data-name'))) {
+        selectedNames.push($(this).attr('data-name'));
       }
-      else {
-        $('.amenities h4').append(selectedNames[i] + ', ');
+    } else {
+      if (selectedNames.includes($(this).attr('data-name'))) {
+        selectedNames.splice(selectedNames.indexOf($(this).attr('data-name')), 1);
       }
+    }
+    selectedNames.sort();
+    $('.amenities h4').html(selectedNames.join(', '));
+  });
+
+  $.get('http://0.0.0.0:5001/api/v1/status/', function (data, textStatus) {
+    if (data.status === 'OK') {
+      $('div#api_status').addClass('available');
     }
   });
-  $.get('http://0.0.0.0:5001/api/v1/status/', function(data, textStatus) {
-      if (data.status == 'OK') {
-        $('div#api_status').addClass('available');
-      }
-    }
-  );
+
   $.ajax({
     type: 'POST',
     url: 'http://0.0.0.0:5001/api/v1/places_search',
     data: JSON.stringify({}),
     contentType: 'application/json',
     success: function (data, textStatus) {
-      
       for (let i = 0; i < data.length; i++) {
-        let article = document.createElement('article');
+        const article = document.createElement('article');
         const titleDiv = document.createElement('div');
         const h2 = document.createElement('h2');
         const priceDiv = document.createElement('div');
@@ -44,23 +41,23 @@ $(function () {
         $(titleDiv).append([h2, priceDiv]);
 
         const informationDiv = document.createElement('div');
-        const max_guest = document.createElement('div');
-        const number_rooms = document.createElement('div');
-        const number_bathrooms = document.createElement('div');
-        $(max_guest).addClass('max_guest');
-        $(number_rooms).addClass('number_rooms');
-        $(number_bathrooms).addClass('number_bathrooms');
+        const maxGuest = document.createElement('div');
+        const numberRooms = document.createElement('div');
+        const numberBathrooms = document.createElement('div');
+        $(maxGuest).addClass('max_guest');
+        $(numberRooms).addClass('number_rooms');
+        $(numberBathrooms).addClass('number_bathrooms');
         $(informationDiv).addClass('information');
 
-        $(max_guest).text(data[i].max_guest + ' Guests');
-        $(number_rooms).text(data[i].number_rooms + ' Rooms');
-        $(number_bathrooms).text(data[i].number_bathrooms + ' Bathrooms');
+        $(maxGuest).text(data[i].max_guest + ' Guests');
+        $(numberRooms).text(data[i].number_rooms + ' Rooms');
+        $(numberBathrooms).text(data[i].number_bathrooms + ' Bathrooms');
 
-        $(informationDiv).append([max_guest, number_rooms, number_bathrooms]);
+        $(informationDiv).append([maxGuest, numberRooms, numberBathrooms]);
 
         const owner = document.createElement('div');
         $(owner).addClass(owner);
-        $.get('http://0.0.0.0:5001/api/v1/users/' + data[i].user_id, function(userdata, textStatus) {
+        $.get('http://0.0.0.0:5001/api/v1/users/' + data[i].user_id, function (userdata, textStatus) {
           $(owner).html('<b>Owner: </b>' + userdata.first_name + ' ' + userdata.last_name);
         });
 
