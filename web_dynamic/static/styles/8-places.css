@@ -141,3 +141,11 @@
     padding-bottom: 5%;
     margin-top: 0px;
 }
+
+.visible {
+    display: block;
+}
+
+.gone {
+    display: none !important;
+}
